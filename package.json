@@ -5,13 +5,12 @@
   "type": "module",
   "scripts": {
     "start": "kill-port 5000 && node index.js",
-    "dev": "kill-port 5000 && nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "kill-port 5000 && nodemon index.js"
   },
   "keywords": [],
   "author": "Md. Shamim Islam",
   "license": "ISC",
-  "description": "Its my bidxpress-server",
+  "description": "This is a bidxpress-server",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",

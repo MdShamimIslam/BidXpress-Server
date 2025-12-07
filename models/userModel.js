@@ -5,25 +5,25 @@ const userSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      require: [true, "Please add your name"],
+      required: [true, "Please add your name"],
     },
     email: {
       type: String,
-      require: [true, "Please add your email"],
+      required: [true, "Please add your email"],
     },
     password: {
       type: String,
-      require: [true, "Please add your password"],
+      required: [true, "Please add your password"],
     },
     photo: {
       type: String,
-      require: [true, "Please add a photo"],
+      required: [true, "Please add a photo"],
       default: "https://cdn-icons-png.flaticon.com/512/2202/2202112.png",
     },
     role: {
       type: String,
       enum: ["admin", "seller", "buyer"],
-      default: "buyer",
+      required: true
     },
     commissionBalance: {
       type: Number,
@@ -42,6 +42,7 @@ const userSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {

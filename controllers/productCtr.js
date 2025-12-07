@@ -14,17 +14,7 @@ cloudinary.v2.config({
 
 // create product
 export const createProduct = asyncHandler(async (req, res) => {
-  const {
-    title,
-    description,
-    price,
-    category,
-    height,
-    lengthpic,
-    width,
-    mediumused,
-    weigth,
-  } = req.body;
+  const { title, description, price, category, height, lengthpic, width, mediumused, weight } = req.body;
 
   const userId = req.user.id;
 
@@ -79,7 +69,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     lengthpic,
     width,
     mediumused,
-    weigth,
+    weight,
     image: fileData,
   });
 
@@ -165,16 +155,7 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 
 // update product
 export const updateProduct = asyncHandler(async (req, res) => {
-  const {
-    title,
-    description,
-    price,
-    height,
-    lengthpic,
-    width,
-    mediumused,
-    weigth,
-  } = req.body;
+  const { title, description, price, height, lengthpic, width, mediumused, weight } = req.body;
   const { id } = req.params;
   const product = await Product.findById(id);
 
@@ -226,7 +207,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
       lengthpic,
       width,
       mediumused,
-      weigth,
+      weight,
       image: Object.keys(fileData).length === 0 ? Product?.image : fileData,
     },
     {
@@ -266,12 +247,12 @@ export const getWonProducts = asyncHandler(async (req, res) => {
   const wonProducts = await Product.find({ soldTo: userId }).sort("-createdAt").populate("user");
 
   const productsWithPrices = await Promise.all(
-    wonProducts.map(async (product) => {
+    wonProducts?.map(async (product) => {
       const latestBid = await BiddingProduct.findOne({ product: product._id }).sort("-createdAt");
       const biddingPrice = latestBid ? latestBid.price : product.price;
       return {
-        ...product._doc,
-        biddingPrice, // Adding the price field
+        ...product._doc,  // ...product.toObject() eta dewa save
+        biddingPrice,
       };
     })
   );
@@ -300,8 +281,7 @@ export const getAllSoldProducts = asyncHandler(async (req, res) => {
 });
 
 // verify And Add Commission Product By Amdin
-export const verifyAndAddCommissionProductByAmdin = asyncHandler(
-  async (req, res) => {
+export const verifyAndAddCommissionProductByAmdin = asyncHandler( async (req, res) => {
     const  {commission}  = req.body;
     const { id } = req.params;
 

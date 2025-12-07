@@ -1,17 +1,15 @@
-
 import mongoose from "mongoose";
-
 
 const productSchema = mongoose.Schema(
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        require: true,
+        required: true,
         ref: "User",
       },
       title: {
         type: String,
-        require: [true, "Please add a title"],
+        required: [true, "Please add a title"],
         trim: true,
       },
       slug: {
@@ -38,7 +36,7 @@ const productSchema = mongoose.Schema(
       },
       price: {
         type: Number,
-        require: [true, "Please add a Price"],
+        required: [true, "Please add a Price"],
       },
       height: {
         type: Number,
@@ -52,7 +50,7 @@ const productSchema = mongoose.Schema(
       mediumused: {
         type: String, 
       },
-      weigth: {
+      weight: {
         type: Number,
       },
       isverify: {
@@ -63,7 +61,10 @@ const productSchema = mongoose.Schema(
         type: Boolean,
         default: false,
       },
-      soldTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      soldTo: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: "User"
+      },
     },
     { timestamps: true }
   );

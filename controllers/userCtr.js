@@ -20,7 +20,7 @@ const generateToken = (id) => {
 
 // register user
 export const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body || {};
 
   if (!name || !email || !password) {
     res.status(400);
@@ -33,10 +33,14 @@ export const registerUser = asyncHandler(async (req, res) => {
     throw new Error("Email is already exit");
   }
 
+  const allowedRoles = ["buyer", "seller"];
+  const finalRole = allowedRoles.includes(role) ? role : "buyer";
+
   const user = await User.create({
     name,
     email,
     password,
+    role: finalRole
   });
 
   const token = generateToken(user._id);
@@ -50,7 +54,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    const { _id, name, email, photo, role } = user;
+    const { _id, name, email, photo, role } = user || {};
     res.status(201).json({ _id, name, email, photo, token, role });
   } else {
     res.status(400);
@@ -60,7 +64,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
 // login user
 export const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body || {};
 
   if (!email || !password) {
     res.status(400);
@@ -75,6 +79,7 @@ export const loginUser = asyncHandler(async (req, res) => {
   const passwordIsCorrrect = await bcrypt.compare(password, user.password);
 
   const token = generateToken(user._id);
+  
   res.cookie("token", token, {
     path: "/",
     httpOnly: true,
@@ -133,6 +138,7 @@ export const loginAsSeller = asyncHandler(async (req, res) => {
   }
 
   const passwordIsCorrect = await bcrypt.compare(password, user.password);
+
   if (!passwordIsCorrect) {
     res.status(400);
     throw new Error("Invalid email or password");
@@ -296,7 +302,6 @@ export const removeFavouriteProduct = asyncHandler(async (req, res) => {
     message: "Product removed from favorites",
   });
 });
-
 
 // get all users (only access for admin)
 export const getAllUser = asyncHandler(async (req, res) => {

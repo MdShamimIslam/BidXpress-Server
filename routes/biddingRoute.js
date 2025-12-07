@@ -4,8 +4,8 @@ import {  placeBid, getBiddingHistory, sellProduct } from "../controllers/biddin
 import { protect, isSeller } from "../middlewares/authMiddleWare.js";
 const router = express.Router();
 
-router.post("/", protect, placeBid);
-router.get("/:productId", getBiddingHistory);
+router.post("/", protect, placeBid); //ok
+router.get("/:productId", getBiddingHistory); //ok
 router.post("/sell", protect, isSeller, sellProduct);
 
 export default router;
