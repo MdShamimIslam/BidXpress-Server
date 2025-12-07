@@ -4,7 +4,6 @@ import {
   loginUser,
   logoutUser,
   registerUser,
-  loginAsSeller,
   getUser,
   updateUser,
   getUserBalance,
@@ -23,7 +22,6 @@ router.post("/register", registerUser);
 router.post("/login", loginUser); 
 router.get("/loggedin", loginStatus);
 router.get("/logout", logoutUser); 
-router.post("/seller", loginAsSeller); 
 router.get("/getuser", protect, getUser);
 router.put("/update-user-profile", protect, upload.single("photo"), updateUser); 
 router.get("/sell-amount", protect, getUserBalance);
