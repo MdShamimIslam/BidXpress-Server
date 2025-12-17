@@ -9,7 +9,9 @@ import {
   deleteProductsByAmdin,
   getProduct,
   getAllSoldProducts,
-  getWonProducts
+  getWonProducts,
+  addProuductReview,
+  getProductReview
 } from "../controllers/productCtr.js";
 import { isSeller, protect, isAdmin } from "../middlewares/authMiddleWare.js";
 import { upload } from "../utils/fileUpload.js";
@@ -24,6 +26,9 @@ router.get("/user", protect, getAllProductsofUser);
 router.get("/:id", getProduct);
 router.delete("/:id", protect, deleteProduct);
 router.put("/:id", protect, isSeller, upload.single("image"), updateProduct);
+router.post("/review/:id", protect, addProuductReview);
+router.get("/review/:id", protect, getProductReview);
+
 
 // Only access for admin
 router.patch("/admin/product-verified/:id", protect, isAdmin, verifyAndAddCommissionProductByAmdin);

@@ -316,3 +316,48 @@ export const deleteProductsByAmdin = asyncHandler(async (req, res) => {
   }
 });
 
+// add product review
+export const addProuductReview = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { rating, comment } = req.body;
+
+  const product = await Product.findById(id);
+
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
+  const review = {
+    user: req.user._id,        
+    name: req.user.name,
+    photo: req.user.photo,
+    rating,
+    comment
+  }
+
+  product.reviews.push(review);
+
+  product.numReviews = product.reviews.length;
+
+  product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
+
+  await product.save();
+
+  res.status(201).json({ message: "Review added" });
+})
+
+// get product review
+export const getProductReview = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const product = await Product.findById(id);
+
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
+  res.status(200).json(product.reviews);
+})
+
