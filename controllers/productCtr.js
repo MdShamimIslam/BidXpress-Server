@@ -361,3 +361,23 @@ export const getProductReview = asyncHandler(async (req, res) => {
   res.status(200).json(product.reviews);
 })
 
+// get related products
+export const getRelatedProducts = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const product = await Product.findById(id);
+
+  if (!product) {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+
+  const relatedProducts = await Product.find({
+    category: product.category,
+    _id: { $ne: product._id }
+  })
+    .sort({ createdAt: -1 });
+
+  res.status(200).json(relatedProducts);
+});
+

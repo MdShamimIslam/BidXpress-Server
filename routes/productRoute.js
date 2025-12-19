@@ -11,7 +11,8 @@ import {
   getAllSoldProducts,
   getWonProducts,
   addProuductReview,
-  getProductReview
+  getProductReview,
+  getRelatedProducts 
 } from "../controllers/productCtr.js";
 import { isSeller, protect, isAdmin } from "../middlewares/authMiddleWare.js";
 import { upload } from "../utils/fileUpload.js";
@@ -28,6 +29,7 @@ router.delete("/:id", protect, deleteProduct);
 router.put("/:id", protect, isSeller, upload.single("image"), updateProduct);
 router.post("/review/:id", protect, addProuductReview);
 router.get("/review/:id", protect, getProductReview);
+router.get("/related/:id", protect, getRelatedProducts );
 
 
 // Only access for admin
