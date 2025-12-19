@@ -12,6 +12,7 @@ import userRoute from "./routes/userRoute.js";
 import productRoute from "./routes/productRoute.js";
 import biddingRoute from "./routes/biddingRoute.js";
 import categoryRoute from "./routes/categoryRoute.js";
+import feedbackRoute from "./routes/feedbackRoute.js";
 import { errorHandler } from "./middlewares/errorMiddleWare.js";
 
 const app = express();
@@ -37,6 +38,7 @@ app.use("/api/users", userRoute);
 app.use("/api/product", productRoute);
 app.use("/api/bidding", biddingRoute);
 app.use("/api/category", categoryRoute);
+app.use("/api/feedback", feedbackRoute);
 
 
 // Manually define __dirname
