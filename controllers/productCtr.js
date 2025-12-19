@@ -79,31 +79,40 @@ export const createProduct = asyncHandler(async (req, res) => {
   });
 });
 
-// get all produc
+// get all products
 export const getAllProduct = asyncHandler(async (req, res) => {
-  const { page, limit, title } = req.query;
+  const { page = 1, limit = 8, title, category } = req.query;
 
-  const query = title
-    ? { title: { $regex: title, $options: "i" } } 
-    : {};
+  const query = {};
+
+  if (title) {
+    query.title = { $regex: title, $options: "i" };
+  }
+
+  if (category && category !== "all") {
+    query.category = category;
+  }
 
   const totalProducts = await Product.countDocuments(query);
 
-  const skip = page && limit ? (page - 1) * limit : 0;
-  const paginationLimit = limit ? parseInt(limit) : 0;
+  const skip = (page - 1) * limit;
 
   const products = await Product.find(query)
     .sort("-createdAt")
     .populate("user")
     .skip(skip)
-    .limit(paginationLimit);
+    .limit(Number(limit));
 
   const productsWithDetails = await Promise.all(
     products.map(async (product) => {
-      const latestBid = await BiddingProduct.findOne({ product: product._id }).sort("-createdAt");
-      const biddingPrice = latestBid ? latestBid.price : product.price;
+      const latestBid = await BiddingProduct
+        .findOne({ product: product._id })
+        .sort("-createdAt");
 
-      const totalBids = await BiddingProduct.countDocuments({ product: product._id });
+      const biddingPrice = latestBid ? latestBid.price : product.price;
+      const totalBids = await BiddingProduct.countDocuments({
+        product: product._id,
+      });
 
       return {
         ...product._doc,
@@ -113,18 +122,14 @@ export const getAllProduct = asyncHandler(async (req, res) => {
     })
   );
 
-  if (page && limit) {
-    return res.status(200).json({
-      products: productsWithDetails,
-      totalProducts,
-      totalPages: Math.ceil(totalProducts / limit),
-      currentPage: Number(page),
-    });
-  }
-
-  // Response for non-paginated request
-  res.status(200).json({ products: productsWithDetails});
+  res.status(200).json({
+    products: productsWithDetails,
+    totalProducts,
+    totalPages: Math.ceil(totalProducts / limit),
+    currentPage: Number(page),
+  });
 });
+
 
 // delete product
 export const deleteProduct = asyncHandler(async (req, res) => {
