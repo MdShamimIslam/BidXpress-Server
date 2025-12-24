@@ -31,7 +31,6 @@ router.post("/review/:id", protect, addProuductReview);
 router.get("/review/:id", protect, getProductReview);
 router.get("/related/:id", protect, getRelatedProducts );
 
-
 // Only access for admin
 router.patch("/admin/product-verified/:id", protect, isAdmin, verifyAndAddCommissionProductByAmdin);
 router.delete("/admin/products/:id", protect, isAdmin, deleteProductsByAmdin);

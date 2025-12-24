@@ -13,6 +13,7 @@ import productRoute from "./routes/productRoute.js";
 import biddingRoute from "./routes/biddingRoute.js";
 import categoryRoute from "./routes/categoryRoute.js";
 import feedbackRoute from "./routes/feedbackRoute.js";
+import paymentRoute from "./routes/paymentRoute.js";
 import { errorHandler } from "./middlewares/errorMiddleWare.js";
 
 const app = express();
@@ -39,7 +40,7 @@ app.use("/api/product", productRoute);
 app.use("/api/bidding", biddingRoute);
 app.use("/api/category", categoryRoute);
 app.use("/api/feedback", feedbackRoute);
-
+app.use("/api/payment", paymentRoute);
 
 // Manually define __dirname
 const __filename = fileURLToPath(import.meta.url);

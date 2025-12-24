@@ -97,6 +97,14 @@ const productSchema = mongoose.Schema(
       numReviews: {
         type: Number,
         default: 0,
+      },
+      paymentStatus: {
+        type: String,
+        enum: ["pending", "paid"],
+        default: "pending",
+      },
+      finalBidPrice: {
+        type: Number,
       }
     },
     { timestamps: true }
