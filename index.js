@@ -61,11 +61,11 @@ const connectDB = async () => {
 };
 
 await connectDB();
-
 // routes
 app.get("/", (_req, res) => {
   res.send("bidxpress Server is running");
 });
+
 app.listen(PORT, () => {
   console.log(`bidxpress server is running on port ${PORT}`);
 });

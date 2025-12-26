@@ -295,14 +295,17 @@ export const verifyAndAddCommissionProductByAmdin = asyncHandler( async (req, re
       throw new Error("Product not found");
     }
 
+    if (product.commission > 0) {
+      res.status(400);
+      throw new Error("Product already verified");
+    }
+
     product.isverify = true;
     product.commission = parseFloat(commission);
 
     await product.save();
 
-    res
-      .status(200)
-      .json({ message: "Product verified successfully", data: product });
+    res.status(200).json({ message: "Product verified successfully", data: product });
   }
 );
 

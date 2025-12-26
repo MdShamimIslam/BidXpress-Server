@@ -65,6 +65,14 @@ const productSchema = mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId, 
         ref: "User"
       },
+      saleStatus: {
+        type: String,
+        enum: ["idle", "pending", "completed"],
+        default: "idle",
+      },
+      winningBid: {
+        type: Number,
+      },
       reviews: [
         {
           user: {
@@ -97,11 +105,6 @@ const productSchema = mongoose.Schema(
       numReviews: {
         type: Number,
         default: 0,
-      },
-      paymentStatus: {
-        type: String,
-        enum: ["pending", "paid"],
-        default: "pending",
       }
     },
     { timestamps: true }

@@ -1,25 +1,25 @@
+import nodemailer from 'nodemailer';
 
-import nodemailer from 'nodemailer'
+export const sendEmail = async ({ email, subject, text }) => {
+  
+  try {
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      auth: {
+        user: process.env.SMTP_USERNAME,
+        pass: process.env.SMTP_PASS,
+      },
+    });
 
-export const sendEmail = async (options) => {
-  if (!options.email) {
-    throw new Error("No recipients defined");
+    await transporter.sendMail({
+      from: `"Bidly Team" <${process.env.SMTP_USERNAME}>`,
+      to: email,
+      subject,
+      text,
+    });
+
+  } catch (error) {
+    console.error("Failed to send email:", error);
   }
-  const transport = nodemailer.createTransport({
-    host: process.env.SMPT_HOST,
-    port: process.env.SMPT_PORT,
-    auth: {
-      user: process.env.SMPT_USERNAME,
-      pass: process.env.SMPT_PASS,
-    },
-  });
-
-  const message = {
-    from: `${process.env.SMPT_FROM_NAME} <${process.env.SMPT_FROM_EMAIL}> `,
-    to: options.email,
-    subject: options.subject,
-    text: options.text,
-  };
-
-  await transport.sendMail(message);
 };

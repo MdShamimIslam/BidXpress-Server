@@ -1,7 +1,6 @@
 import asyncHandler from "express-async-handler";
 import BiddingProduct from "../models/biddingModel.js";
 import Product from "../models/productModel.js";
-import User from "../models/userModel.js";
 import { sendEmail } from "../utils/sendEmail.js";
 
 // place bid
@@ -16,9 +15,20 @@ export const placeBid = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 
+  if (product.user.toString() === userId) {
+    res.status(400);
+    throw new Error("You cannot bid on your own product");
+  }
+
   if (!product.isverify) {
     res.status(400);
     throw new Error("Bidding is not verified for these product.");
+  }
+
+  if (["pending"].includes(product.saleStatus)) {
+    return res.status(400).json({
+      message: "The seller has already selected a winning bid. You cannot place a bid now.",
+    });
   }
 
   if (product.isSoldout) {
@@ -71,75 +81,55 @@ export const getBiddingHistory = asyncHandler(async (req, res) => {
   res.status(200).json(biddingHistory);
 });
 
-// sell the product
 export const sellProduct = asyncHandler(async (req, res) => {
   const { productId } = req.body;
-  const userId = req.user.id;
+  const sellerId = req.user.id;
 
   const product = await Product.findById(productId);
-
   if (!product) {
-    return res.status(404).json({ error: "Product not found" });
+    return res.status(404).json({ message: "Product not found" });
   }
 
-  // Check if the user is authorized to sell the product
-  if (product.user.toString() !== userId) {
-    return res
-      .status(403)
-      .json({ error: "You do not have permission to sell this product" });
+  if (product.user.toString() !== sellerId) {
+    return res.status(403).json({ message: "Unauthorized" });
   }
-  // Find the highest bid
+
+  if (["pending", "completed"].includes(product.saleStatus)) {
+    return res.status(400).json({
+      message: "Product already in selling or sold state",
+    });
+  }
+
   const highestBid = await BiddingProduct.findOne({ product: productId }).sort({ price: -1 }).populate("user");
 
   if (!highestBid) {
-    return res
-      .status(400)
-      .json({ message: "No winning bid found for the product." });
-  }
-  // Calculate commission and final price
-  const commissionRate = product.commission;
-  const commissionAmount = (commissionRate / 100) * highestBid.price;
-  const finalPrice = highestBid.price - commissionAmount;
-
-  // Update product details
-  product.isSoldout = true;
-  product.soldTo = highestBid.user;
-  product.soldPrice = finalPrice;
-
-  // Update admin's commission balance
-  const admin = await User.findOne({ role: "admin" });
-  if (admin) {
-    admin.commissionBalance += commissionAmount;
-    await admin.save();
+    return res.status(400).json({ message: "No bids found" });
   }
 
-  // Update seller's balance
-  const seller = await User.findById(product.user);
-  if (seller) {
-    seller.balance += finalPrice;
-    await seller.save();
-  } else {
-    return res.status(404).json({ error: "Seller not found" });
-  }
+  product.saleStatus = "pending";
+  product.winningBid = highestBid.price;
+  product.soldTo = highestBid.user._id;
 
-  // Save product
   await product.save();
 
-  //   Send email notification to the highest bidder
+  console.log(highestBid.user.email);
+
   await sendEmail({
     email: highestBid.user.email,
-    subject: `🎉 Congratulations from Bidly! You won the auction!`,
-    text: `Hi ${highestBid.user.name || ''},
-  
-      Great news! You have won the auction for **"${product.title}"** with a bid of **$${highestBid.price}**.
-      
-      Thank you for participating in Bidly Auctions. We hope you enjoy your new item!
-      
-      Best regards,
-      Bidly Auctions Team
-    `,
-  });
-  
+    subject: "🎉 You won the auction!",
+    text: `
+            Hi ${highestBid.user.name || ""},
 
-  res.status(200).json({ message: "Product has been successfully sold!" });
+            You won the auction for "${product.title}"
+            Winning bid: $${highestBid.price}
+
+            Please complete payment to confirm your purchase.
+
+            Thank you,
+            Bidly Team
+          `,
+  });
+
+  res.json({ message: "Winner selected & notified successfully" });
 });
+
