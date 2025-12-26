@@ -81,7 +81,7 @@ export const createProduct = asyncHandler(async (req, res) => {
 
 // get all products
 export const getAllProduct = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 8, title, category } = req.query;
+  const { page = 1, limit, title, category } = req.query;
 
   const query = {};
 
@@ -129,7 +129,6 @@ export const getAllProduct = asyncHandler(async (req, res) => {
     currentPage: Number(page),
   });
 });
-
 
 // delete product
 export const deleteProduct = asyncHandler(async (req, res) => {
@@ -287,7 +286,7 @@ export const getAllSoldProducts = asyncHandler(async (req, res) => {
 
 // verify And Add Commission Product By Amdin
 export const verifyAndAddCommissionProductByAmdin = asyncHandler( async (req, res) => {
-    const  {commission}  = req.body;
+    const { commission }  = req.body;
     const { id } = req.params;
 
     const product = await Product.findById(id);

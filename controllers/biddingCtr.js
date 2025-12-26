@@ -3,20 +3,25 @@ import BiddingProduct from "../models/biddingModel.js";
 import Product from "../models/productModel.js";
 import User from "../models/userModel.js";
 import { sendEmail } from "../utils/sendEmail.js";
-import e from "express";
 
-// adding bid in product for bidddingProduct
+// place bid
 export const placeBid = asyncHandler(async (req, res) => {
-  const { productId, price } = req.body;
+  const { productId, price } = req.body || {};
   const userId = req.user.id;
 
   const product = await Product.findById(productId);
-  if (!product.isverify) {
+
+  if (!product) {
     res.status(400);
-    throw new Error("Bidding is not verified for these products.");
+    throw new Error("Product not found");
   }
 
-  if (!product || product.isSoldout === true) {
+  if (!product.isverify) {
+    res.status(400);
+    throw new Error("Bidding is not verified for these product.");
+  }
+
+  if (product.isSoldout) {
     res.status(400);
     throw new Error("Invalid product or bidding is closed");
   }
@@ -84,16 +89,13 @@ export const sellProduct = asyncHandler(async (req, res) => {
       .json({ error: "You do not have permission to sell this product" });
   }
   // Find the highest bid
-  const highestBid = await BiddingProduct.findOne({ product: productId })
-    .sort({ price: -1 })
-    .populate("user");
+  const highestBid = await BiddingProduct.findOne({ product: productId }).sort({ price: -1 }).populate("user");
 
   if (!highestBid) {
     return res
       .status(400)
       .json({ message: "No winning bid found for the product." });
   }
-
   // Calculate commission and final price
   const commissionRate = product.commission;
   const commissionAmount = (commissionRate / 100) * highestBid.price;
@@ -126,9 +128,18 @@ export const sellProduct = asyncHandler(async (req, res) => {
   //   Send email notification to the highest bidder
   await sendEmail({
     email: highestBid.user.email,
-    subject: "Congratulations! You won the auction!",
-    text: `You have won the auction for "${product.title}" with a bid of $${highestBid.price}.`,
+    subject: `🎉 Congratulations from Bidly! You won the auction!`,
+    text: `Hi ${highestBid.user.name || ''},
+  
+      Great news! You have won the auction for **"${product.title}"** with a bid of **$${highestBid.price}**.
+      
+      Thank you for participating in Bidly Auctions. We hope you enjoy your new item!
+      
+      Best regards,
+      Bidly Auctions Team
+    `,
   });
+  
 
   res.status(200).json({ message: "Product has been successfully sold!" });
 });

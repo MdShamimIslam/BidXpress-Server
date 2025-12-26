@@ -9,7 +9,7 @@ export const sendEmail = async (options) => {
     host: process.env.SMPT_HOST,
     port: process.env.SMPT_PORT,
     auth: {
-      user: process.env.SMPT_EMAIL,
+      user: process.env.SMPT_USERNAME,
       pass: process.env.SMPT_PASS,
     },
   });

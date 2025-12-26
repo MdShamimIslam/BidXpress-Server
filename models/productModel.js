@@ -102,9 +102,6 @@ const productSchema = mongoose.Schema(
         type: String,
         enum: ["pending", "paid"],
         default: "pending",
-      },
-      finalBidPrice: {
-        type: Number,
       }
     },
     { timestamps: true }
