@@ -15,8 +15,11 @@ import categoryRoute from "./routes/categoryRoute.js";
 import feedbackRoute from "./routes/feedbackRoute.js";
 import paymentRoute from "./routes/paymentRoute.js";
 import { errorHandler } from "./middlewares/errorMiddleWare.js";
+import { stripeWebhook } from "./controllers/paymentCtrl.js";
 
 const app = express();
+
+app.post( "/api/payment/webhook", express.raw({ type: "application/json" }), stripeWebhook );
 
 //middlewares
 app.use(express.json());

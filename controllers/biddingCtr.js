@@ -81,6 +81,7 @@ export const getBiddingHistory = asyncHandler(async (req, res) => {
   res.status(200).json(biddingHistory);
 });
 
+// sell product
 export const sellProduct = asyncHandler(async (req, res) => {
   const { productId } = req.body;
   const sellerId = req.user.id;
@@ -112,8 +113,6 @@ export const sellProduct = asyncHandler(async (req, res) => {
 
   await product.save();
 
-  console.log(highestBid.user.email);
-
   await sendEmail({
     email: highestBid.user.email,
     subject: "🎉 You won the auction!",
@@ -126,7 +125,7 @@ export const sellProduct = asyncHandler(async (req, res) => {
             Please complete payment to confirm your purchase.
 
             Thank you,
-            Bidly Team
+            BidXpress Team
           `,
   });
 

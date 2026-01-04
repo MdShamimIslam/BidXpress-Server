@@ -11,7 +11,7 @@ import {
   getFavouriteProducts,
   removeFavouriteProduct,
   getAllUser,
-  estimateIncome,
+  getAdminCommissionBalance,
   deleteUserByAdmin
 } from "../controllers/userCtr.js";
 import { protect, isAdmin } from "../middlewares/authMiddleWare.js";
@@ -30,7 +30,7 @@ router.get("/favourite-product", protect, getFavouriteProducts);
 router.delete( "/favourite-product/:id", protect, removeFavouriteProduct ); 
 
 // only access for admin
-router.get("/estimate-income", protect, isAdmin, estimateIncome); 
+router.get("/estimate-income", protect, isAdmin, getAdminCommissionBalance); 
 router.get("/alluser", protect, isAdmin, getAllUser);
 router.delete("/admin/delete-user/:id", protect, isAdmin, deleteUserByAdmin);
 

@@ -277,7 +277,7 @@ export const getAllUser = asyncHandler(async (req, res) => {
 });
 
 // get admin commision income
-export const estimateIncome = asyncHandler(async (req, res) => {
+export const getAdminCommissionBalance = asyncHandler(async (req, res) => {
   try {
     const admin = await User.findOne({ role: "admin" });
     if (!admin) {
