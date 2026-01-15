@@ -7,6 +7,15 @@ import cloudinary from "cloudinary";
 import dotenv from "dotenv";
 dotenv.config();
 
+const isProduction = process.env.NODE_ENV === "production";
+
+const cookieOptions = {
+  path: "/",
+  httpOnly: true,
+  sameSite: isProduction ? "none" : "lax",
+  secure: isProduction,
+};
+
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -46,11 +55,8 @@ export const registerUser = asyncHandler(async (req, res) => {
   const token = generateToken(user._id);
 
   res.cookie("token", token, {
-    path: "/",
-    httpOnly: true,
-    expires: new Date(Date.now() + 1000 * 86400),
-    sameSite: "none",
-    secure: true,
+    ...cookieOptions,
+    maxAge: 1000 * 60 * 60 * 24, 
   });
 
   if (user) {
@@ -81,11 +87,8 @@ export const loginUser = asyncHandler(async (req, res) => {
   const token = generateToken(user._id);
   
   res.cookie("token", token, {
-    path: "/",
-    httpOnly: true,
-    expires: new Date(Date.now() + 1000 * 86400),
-    sameSite: "none",
-    secure: true,
+    ...cookieOptions,
+    maxAge: 1000 * 60 * 60 * 24,
   });
 
   if (user && passwordIsCorrrect) {
@@ -111,13 +114,10 @@ export const loginStatus = asyncHandler(async (req, res) => {
 });
 
 // user loged out
-export const logoutUser = asyncHandler(async (req, res) => {
+export const logoutUser = asyncHandler(async (_req, res) => {
   res.cookie("token", "", {
-    path: "/",
-    httpOnly: true,
-    expires: new Date(0),
-    sameSite: "none",
-    secure: true,
+    ...cookieOptions,
+    maxAge: 0,
   });
   return res.status(200).json({ message: "Successfully Logged Out" });
 });

@@ -2,12 +2,11 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import mongoose from "mongoose";
-import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
-const PORT = process.env.PORT || 5000;
+
 import userRoute from "./routes/userRoute.js";
 import productRoute from "./routes/productRoute.js";
 import biddingRoute from "./routes/biddingRoute.js";
@@ -19,25 +18,28 @@ import { stripeWebhook } from "./controllers/paymentCtrl.js";
 
 const app = express();
 
+// Stripe webhook
 app.post( "/api/payment/webhook", express.raw({ type: "application/json" }), stripeWebhook );
 
-//middlewares
-app.use(express.json());
+// Middlewares
+app.use((req, res, next) => {
+  if (req.originalUrl === "/api/payment/webhook") {
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
+
 app.use(cookieParser());
+app.use(express.urlencoded({extended: false}));
 app.use(
-  express.urlencoded({
-    extended: false,
+  cors({
+    origin: ["https://bidxpress.netlify.app"],
+    credentials: true,
   })
 );
-app.use(bodyParser.json());
-app.use(
-  cors(
-    // "https://bidxpress.netlify.app"
-    { origin: ["http://localhost:5173"], credentials: true }
-  )
-);
 
-// router handlers
+// Routes
 app.use("/api/users", userRoute);
 app.use("/api/product", productRoute);
 app.use("/api/bidding", biddingRoute);
@@ -45,30 +47,21 @@ app.use("/api/category", categoryRoute);
 app.use("/api/feedback", feedbackRoute);
 app.use("/api/payment", paymentRoute);
 
-// Manually define __dirname
+// Serve static files
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// error handlers middlewares
+// Error Middleware
 app.use(errorHandler);
 
-// connect database
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.DATABASE_CLOUD);
-    console.log("bidxpress database connected");
-  } catch (error) {
-    console.log(error);
-  }
-};
+// Connect to MongoDB
+await mongoose.connect(process.env.DATABASE_CLOUD);
 
-await connectDB();
-// routes
 app.get("/", (_req, res) => {
-  res.send("bidxpress Server is running");
+  res.send("Bidxpress Server is running");
 });
 
-app.listen(PORT, () => {
-  console.log(`bidxpress server is running on port ${PORT}`);
+app.listen(process.env.PORT || 8000, () => {
+  console.log("Server is running");
 });
