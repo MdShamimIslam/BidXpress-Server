@@ -79,9 +79,7 @@ const productSchema = mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
-          },
-          name: String,     
-          photo: String,    
+          }, 
           rating: {
             type: Number,
             required: true,

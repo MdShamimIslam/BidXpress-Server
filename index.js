@@ -34,6 +34,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended: false}));
 app.use(
   cors({
+    // origin: ["http://localhost:5173","https://bidxpress.netlify.app"],
     origin: ["https://bidxpress.netlify.app"],
     credentials: true,
   })
@@ -63,5 +64,5 @@ app.get("/", (_req, res) => {
 });
 
 app.listen(process.env.PORT || 8000, () => {
-  console.log("Server is running");
+  console.log(`Bidxpress Server is running on port ${process.env.PORT}`);
 });

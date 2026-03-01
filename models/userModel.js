@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema(
     photo: {
       type: String,
       required: [true, "Please add a photo"],
-      default: "https://cdn-icons-png.flaticon.com/512/2202/2202112.png",
+      default: "https://cdn-icons-png.flaticon.com/512/2202/2202112.png"
     },
     role: {
       type: String,

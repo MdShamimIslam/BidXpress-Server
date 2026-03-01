@@ -336,9 +336,7 @@ export const addProuductReview = asyncHandler(async (req, res) => {
   }
 
   const review = {
-    user: req.user._id,        
-    name: req.user.name,
-    photo: req.user.photo,
+    user: req.user._id,
     rating,
     comment
   }
@@ -358,7 +356,7 @@ export const addProuductReview = asyncHandler(async (req, res) => {
 export const getProductReview = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const product = await Product.findById(id);
+  const product = await Product.findById(id).populate("reviews.user", "name photo");;
 
   if (!product) {
     res.status(404);

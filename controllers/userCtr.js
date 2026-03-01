@@ -56,12 +56,13 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   res.cookie("token", token, {
     ...cookieOptions,
-    maxAge: 1000 * 60 * 60 * 24, 
+    maxAge: 1000 * 60 * 60 * 24, // 1 day
   });
 
   if (user) {
+    const expiresAt = Date.now() + 1000 * 60 * 60 * 24; 
     const { _id, name, email, photo, role } = user || {};
-    res.status(201).json({ _id, name, email, photo, token, role });
+    res.status(201).json({ _id, name, email, photo, token, role, expiresAt });
   } else {
     res.status(400);
     throw new Error("Invalid user data");
@@ -88,12 +89,15 @@ export const loginUser = asyncHandler(async (req, res) => {
   
   res.cookie("token", token, {
     ...cookieOptions,
-    maxAge: 1000 * 60 * 60 * 24,
+    maxAge: 1000 * 60 * 60 * 24, // 1 day
+    // maxAge: 1000 * 60 * 1, // 1 minute
   });
 
+  
   if (user && passwordIsCorrrect) {
+    const expiresAt = Date.now() + 1000 * 60 * 60 * 24;
     const { _id, name, email, photo, role } = user;
-    res.status(201).json({ _id, name, email, photo, role, token });
+    res.status(201).json({ _id, name, email, photo, role, token, expiresAt });
   } else {
     res.status(400);
     throw new Error("Invalid email or password");
