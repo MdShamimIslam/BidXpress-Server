@@ -156,7 +156,9 @@ export const updateUser = asyncHandler(async (req, res) => {
         await cloudinary.v2.uploader.destroy(fileData.public_id);
       }
 
-      const uploadedFile = await cloudinary.v2.uploader.upload(req.file.path, {
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+      const uploadedFile = await cloudinary.v2.uploader.upload(dataURI, {
         folder: "Bidding/Profile",
         resource_type: "image",
       });

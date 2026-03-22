@@ -19,7 +19,7 @@ import { stripeWebhook } from "./controllers/paymentCtrl.js";
 const app = express();
 
 // Stripe webhook
-app.post( "/api/payment/webhook", express.raw({ type: "application/json" }), stripeWebhook );
+app.post("/api/payment/webhook", express.raw({ type: "application/json" }), stripeWebhook);
 
 // Middlewares
 app.use((req, res, next) => {
@@ -31,10 +31,9 @@ app.use((req, res, next) => {
 });
 
 app.use(cookieParser());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(
   cors({
-    // origin: ["http://localhost:5173","https://bidxpress.netlify.app"],
     origin: ["https://bidxpress.netlify.app"],
     credentials: true,
   })
