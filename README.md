@@ -56,6 +56,13 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 # Server Stripe Configuration
 STRIPE_SECRET_KEY=sk_test_your_secret_stripe_api_key
 
+# Very Important for Local Development (Must use `stripe listen` generated key, NOT the dashboard key!)
+STRIPE_WEBHOOK_SECRET=whsec_your_stripe_cli_webhook_secret
+
+# The Frontend URL (Needed for Stripe redirect success/cancel URLs)
+# (During local development it MUST be: http://localhost:5173, NOT the deployed link)
+CLIENT_SITE_URL=http://localhost:5173
+
 # Nodemailer SMTP Configuration
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
@@ -63,7 +70,18 @@ SMTP_USER=your_email@gmail.com
 SMTP_PASS=your_app_password
 ```
 
-### 4. Running the Backend API
+### 4. Simulating Stripe Webhooks Locally
+Because `localhost` is not publicly accessible via the Internet, Stripe's servers cannot ping your `/webhook` endpoint when a test user successfully pays. 
+To proxy successful payments to the local webhook endpoint:
+1. Open a **second terminal**.
+2. Run the Stripe CLI forwarder:
+   ```bash
+   stripe listen --forward-to localhost:5000/webhook
+   ```
+3. Copy the output signature secret `whsec_...` and set it as `STRIPE_WEBHOOK_SECRET` in `.env`.
+4. **Restart the Node server entirely (Ctrl+C and `npm run dev`) for the variable to apply!**
+
+### 5. Running the Backend API
 Start the development server using nodemon (which will automatically restart upon file changes):
 ```bash
 npm run dev
